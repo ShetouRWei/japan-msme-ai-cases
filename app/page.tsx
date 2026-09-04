@@ -8,6 +8,30 @@ type CaseItem = {
   facts: Record<string, string>; detail: string; sources: { label: string; url: string }[];
 };
 
+const categoriesById: Record<string, string[]> = {
+  "JP-MFG-AI-0001": ["人員及知識管理"],
+  "JP-MFG-AI-0002": ["生產與品質管理"],
+  "JP-MFG-AI-0003": ["生產與品質管理"],
+  "JP-MFG-AI-0004": ["生產與品質管理", "行銷管理"],
+  "JP-MFG-AI-0005": ["生產與品質管理"],
+  "JP-MFG-AI-0006": ["原物料管理", "生產與品質管理"],
+  "JP-MFG-AI-0007": ["人員及知識管理"],
+  "JP-MFG-AI-0008": ["行銷管理"],
+  "JP-MFG-AI-0009": ["生產與品質管理"],
+  "JP-MFG-AI-0010": ["原物料管理", "生產與品質管理"],
+  "JP-MFG-AI-0011": ["環境及設備管理"],
+  "JP-MFG-AI-0012": ["生產與品質管理"],
+  "JP-MFG-AI-0013": ["人員及知識管理"],
+  "JP-MFG-AI-0014": ["生產與品質管理"],
+  "JP-MFG-AI-0015": ["人員及知識管理", "生產與品質管理"],
+  "JP-MFG-AI-0016": ["生產與品質管理"],
+  "JP-MFG-AI-0017": ["生產與品質管理"],
+  "JP-MFG-AI-0018": ["環境及設備管理", "生產與品質管理"],
+  "JP-MFG-AI-0019": ["行銷管理"],
+  "JP-MFG-AI-0020": ["綜合或其他", "行銷管理"],
+  "JP-MFG-AI-0021": ["生產與品質管理"],
+};
+
 function cleanInline(value: string) {
   return value.replace(/\*\*/g, "").replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1").replace(/<br\s*\/?>/gi, " ").trim();
 }
@@ -95,7 +119,7 @@ export default function Home() {
       {loading ? <div className="state">正在載入案例資料…</div> : visible.length === 0 ? <div className="state"><strong>找不到相符案例</strong><span>請嘗試其他關鍵字或清除篩選條件。</span><button onClick={reset}>顯示全部案例</button></div> :
         <div className="case-grid">{visible.map((item) => <article className="case-card" key={item.id} onClick={() => setSelected(item)}>
           <div className="card-top"><span>{item.area}</span><span>{item.id}</span></div><h3>{item.title}</h3><p className="company">{item.company}</p><p>{item.summary}</p>
-          <div className="tags"><span>{item.ai}</span><span className={item.subsidy.includes("已確認使用") || item.subsidy.includes("已確認列入") ? "confirmed" : ""}>{item.subsidy}</span></div>
+          <div className="tags" aria-label="AI 應用類別">{(categoriesById[item.id] ?? ["綜合或其他"]).map((category) => <span key={category}>{category}</span>)}</div>
           <button onClick={(event) => { event.stopPropagation(); setSelected(item); }}>查看案例詳情 <span aria-hidden="true">→</span></button>
         </article>)}</div>}
     </section>
