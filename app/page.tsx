@@ -27,13 +27,16 @@ function parseTableFacts(block: string) {
 }
 
 function parseDatabase(markdown: string): CaseItem[] {
-  const overview = markdown.match(/## 案例總覽([\s\S]*?)\n---/)?.[1] ?? "";
+  // The database ends with a commented-out authoring template. Remove HTML
+  // comments first so placeholder IDs and fields can never overwrite cases.
+  const content = markdown.replace(/<!--[\s\S]*?-->/g, "");
+  const overview = content.match(/## 案例總覽([\s\S]*?)\n---/)?.[1] ?? "";
   const base = overview.split("\n").filter((line) => line.startsWith("| JP-MFG-AI-")).map((line) => {
     const cells = line.split("|").slice(1, -1).map(cleanInline);
     return { id: cells[0], summary: cells[1], company: cells[2], location: cells[3], area: getArea(cells[3]), sector: cells[4], ai: cells[5], subsidy: cells[6] };
   });
   const details = new Map<string, Pick<CaseItem, "title" | "facts" | "detail" | "sources">>();
-  for (const block of markdown.split(/\n(?=### JP-MFG-AI-)/).slice(1)) {
+  for (const block of content.split(/\n(?=### JP-MFG-AI-)/).slice(1)) {
     const heading = block.match(/^### (JP-MFG-AI-\d+)｜(.+)$/m);
     if (!heading) continue;
     const fullTitle = cleanInline(heading[2]);
@@ -101,7 +104,7 @@ export default function Home() {
     {selected && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setSelected(null)}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
       <button className="modal-close" aria-label="關閉案例詳情" onClick={() => setSelected(null)}>×</button>
       <div className="modal-heading"><div className="card-top"><span>{selected.area}</span><span>{selected.id}</span></div><h2 id="detail-title">{selected.title}</h2><p className="company">{selected.company}</p><p className="lead">{selected.summary}</p></div>
-      <div className="fact-grid">{[["所在地", selected.location], ["製造領域", selected.facts["製造領域"] || selected.sector], ["資本額", selected.facts["資本額"] || "未公開"], ["員工人數", selected.facts["員工人數"] || "未公開"], ["AI 應用", selected.ai], ["補助金／支援", selected.subsidy]].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}</div>
+      <div className="fact-grid">{[["所在地", selected.location], ["製造領域", selected.facts["製造領域"] || selected.sector], ["資本額", selected.facts["資本額"] || "未公開"], ["員工人數", selected.facts["員工人數"] || "未公開"], ["AI 技術細節", selected.facts["AI 技術"] || selected.ai], ["補助金／支援", selected.subsidy]].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}</div>
       <div className="detail-copy"><h3>案例詳細內容</h3><p>{selected.detail}</p></div>
       {selected.sources.length > 0 && <div className="source-list"><h3>資料來源</h3>{selected.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.label}<span aria-hidden="true">↗</span></a>)}</div>}
     </section></div>}
