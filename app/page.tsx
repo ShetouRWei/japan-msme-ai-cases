@@ -32,6 +32,16 @@ const categoriesById: Record<string, string[]> = {
   "JP-MFG-AI-0021": ["生產與品質管理"],
 };
 
+const categoryOptions = [
+  "人員及知識管理",
+  "環境及設備管理",
+  "原物料管理",
+  "生產與品質管理",
+  "行銷管理",
+  "能源與碳排管理",
+  "綜合或其他",
+];
+
 function cleanInline(value: string) {
   return value.replace(/\*\*/g, "").replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1").replace(/<br\s*\/?>/gi, " ").trim();
 }
@@ -78,6 +88,7 @@ export default function Home() {
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("全部地區");
+  const [category, setCategory] = useState("全部類別");
   const [selected, setSelected] = useState<CaseItem | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,11 +105,12 @@ export default function Home() {
     const needle = query.trim().toLocaleLowerCase();
     return cases.filter((item) => {
       const locationMatch = location === "全部地區" || item.area === location;
+      const categoryMatch = category === "全部類別" || (categoriesById[item.id] ?? ["綜合或其他"]).includes(category);
       const haystack = [item.id, item.company, item.title, item.summary, item.location, item.sector, item.ai, item.subsidy, item.detail].join(" ").toLocaleLowerCase();
-      return locationMatch && (!needle || haystack.includes(needle));
+      return locationMatch && categoryMatch && (!needle || haystack.includes(needle));
     });
-  }, [cases, location, query]);
-  const reset = () => { setQuery(""); setLocation("全部地區"); };
+  }, [cases, category, location, query]);
+  const reset = () => { setQuery(""); setLocation("全部地區"); setCategory("全部類別"); };
 
   return <main>
     <header className="hero">
@@ -112,7 +124,8 @@ export default function Home() {
       <div className="toolbar">
         <label className="search-field"><span>關鍵字搜尋</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="公司、技術或應用場景" /></label>
         <label className="select-field"><span>所在地</span><select value={location} onChange={(event) => setLocation(event.target.value)}><option>全部地區</option>{locations.map((area) => <option key={area}>{area}</option>)}</select></label>
-        <button className="reset" onClick={reset} disabled={!query && location === "全部地區"}>清除條件</button>
+        <label className="select-field"><span>應用類別</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option>全部類別</option>{categoryOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
+        <button className="reset" onClick={reset} disabled={!query && location === "全部地區" && category === "全部類別"}>清除條件</button>
       </div>
       <div className="result-row"><span>目前顯示 <strong>{visible.length}</strong> 案</span><span>點選卡片查看完整資料與來源</span></div>
 
