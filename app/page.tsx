@@ -57,7 +57,7 @@ export default function Home() {
   const [selected, setSelected] = useState<CaseItem | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetch("/cases.md").then((response) => response.text()).then((text) => setCases(parseDatabase(text))).finally(() => setLoading(false)); }, []);
+  useEffect(() => { fetch("cases.md").then((response) => response.text()).then((text) => setCases(parseDatabase(text))).finally(() => setLoading(false)); }, []);
   useEffect(() => {
     if (!selected) return;
     const close = (event: KeyboardEvent) => event.key === "Escape" && setSelected(null);
