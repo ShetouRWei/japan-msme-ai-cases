@@ -30,6 +30,7 @@ const categoriesById: Record<string, string[]> = {
   "JP-MFG-AI-0019": ["行銷管理"],
   "JP-MFG-AI-0020": ["綜合或其他", "行銷管理"],
   "JP-MFG-AI-0021": ["生產與品質管理"],
+  "JP-MFG-AI-0022": ["生產與品質管理"],
 };
 
 const categoryOptions = [
@@ -120,7 +121,7 @@ export default function Home() {
     </header>
 
     <section className="catalog" aria-labelledby="catalog-title">
-      <div className="catalog-head"><div><p className="eyebrow">CASE LIBRARY</p><h2 id="catalog-title">案例一覽</h2></div><div className="stats" aria-label="資料庫統計"><div><strong>{cases.length || 21}</strong><span>收錄案例</span></div><div><strong>{locations.length || "—"}</strong><span>涵蓋地區</span></div></div></div>
+      <div className="catalog-head"><div><p className="eyebrow">CASE LIBRARY</p><h2 id="catalog-title">案例一覽</h2></div><div className="stats" aria-label="資料庫統計"><div><strong>{cases.length || 22}</strong><span>收錄案例</span></div><div><strong>{locations.length || "—"}</strong><span>涵蓋地區</span></div></div></div>
       <div className="toolbar">
         <label className="search-field"><span>關鍵字搜尋</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="公司、技術或應用場景" /></label>
         <label className="select-field"><span>所在地</span><select value={location} onChange={(event) => setLocation(event.target.value)}><option>全部地區</option>{locations.map((area) => <option key={area}>{area}</option>)}</select></label>
